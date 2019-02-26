@@ -36,6 +36,11 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
                     
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
+                        
+                        if self.messages.count > 0 {
+                            let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
+                            self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+                        }
                     }
             })
         }, withCancel: nil)
@@ -62,15 +67,34 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         
         collectionView.keyboardDismissMode = .interactive
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
+        
+        setupKeyboardDidShowObserver()
+        
         // Apple recommended way to manipulate keyboard:
         //       setupInputComponents()
         //       setupKeyboardObserver()
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tap)
+    }
+    
+    func setupKeyboardDidShowObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidshow), name: UIResponder.keyboardDidShowNotification, object: nil)
+    }
+    
+    @objc private func handleKeyboardDidshow() {
+        if messages.count > 0 {
+            let indexPath = IndexPath(item: messages.count - 1, section: 0)
+            self.collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
+        }
     }
     
     // Use inputAccessoryView to manipulate keyboard:
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
     
     lazy var inputContainerView: UIView = {
         let containerView = UIView()
@@ -168,20 +192,30 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
                     
                     let imageUrl = url.absoluteString
                     
-                    self.sendMessageWithImage(imageUrl: imageUrl)
+                    self.sendMessageWithImage(imageUrl: imageUrl, image: image)
                 })
             }
         }
     }
     
-    func sendMessageWithImage(imageUrl: String) {
+    func sendMessageWithImage(imageUrl: String, image: UIImage) {
+        let properties:[String: Any] = ["imageUrl": imageUrl, "imageWidth": image.size.width, "imageHeight": image.size.height]
+        sendMessageWithProperties(properties: properties)
+    }
+    
+    private func sendMessageWithProperties(properties: [String: Any]) {
         let ref = Database.database().reference().child("messages")
         let childRef = ref.childByAutoId()
         
-        if let message = inputTextField.text, let user = self.user, let fromId = Auth.auth().currentUser?.uid {
+        if let user = self.user, let fromId = Auth.auth().currentUser?.uid {
             let toId = user.id!
             let timestamp = String(Date().timeIntervalSince1970)
-            let values = ["imageUrl": imageUrl, "toId": toId, "fromId": fromId, "timestamp": timestamp]
+            var values: [String: Any] = ["toId": toId, "fromId": fromId, "timestamp": timestamp]
+            
+            for (key, value) in properties {
+                values[key] = value
+            }
+            
             childRef.updateChildValues(values) { (error, ref) in
                 if error != nil {
                     print(error!)
@@ -215,11 +249,7 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
     
     
     /*
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        NotificationCenter.default.removeObserver(self)
-    }
+    
     
     func setupKeyboardObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -311,30 +341,9 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
     */
     
     @objc func handleSend() {
-        let ref = Database.database().reference().child("messages")
-        let childRef = ref.childByAutoId()
-        
-        if let message = inputTextField.text, let user = self.user, let fromId = Auth.auth().currentUser?.uid {
-            let toId = user.id!
-            let timestamp = String(Date().timeIntervalSince1970)
-            let values = ["text": message, "toId": toId, "fromId": fromId, "timestamp": timestamp]
-            childRef.updateChildValues(values) { (error, ref) in
-                if error != nil {
-                    print(error!)
-                    return
-                }
-                
-                self.inputTextField.text = nil
-                
-                let userMessagesRef = Database.database().reference().child("user-messages").child(fromId).child(toId)
-                
-                if let messageId = childRef.key {
-                     userMessagesRef.updateChildValues([messageId: 1])
-                    
-                    let receiptentUserMessageRef = Database.database().reference().child("user-messages").child(toId).child(fromId)
-                    receiptentUserMessageRef.updateChildValues([messageId: 1])
-                }
-            }
+        if let text = inputTextField.text {
+            let properties: [String: Any] = ["text": text]
+            sendMessageWithProperties(properties: properties)
         }
     }
     
@@ -360,6 +369,8 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         if let text = message.text {
             cell.textView.text = text
             cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
+        } else if let _ = message.imageUrl {
+            cell.bubbleWidthAnchor?.constant = 200
         }
         
         setupCell(cell: cell, message: message)
@@ -397,12 +408,14 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
         var height: CGFloat = 80
+        let message = messages[indexPath.item]
 
-        if let text = messages[indexPath.item].text {
+        if let text = message.text {
             height = estimateFrameForText(text: text).height + 20
-        } else if let imageUrl = messages[indexPath.item].imageUrl {
-          //  height = estimateFrameForText(text: text).height + 20
+        } else if let imageWidth = message.imageWidth, let imageHeight = message.imageHeight {
+          height = imageHeight / imageWidth * 200
         }
 
         return CGSize(width: view.frame.width, height: height)

@@ -15,6 +15,7 @@ class ChatMessageCell: UICollectionViewCell {
         tv.backgroundColor = UIColor.clear
         tv.textColor = UIColor.white
         tv.isScrollEnabled = false
+        tv.isEditable = false
         tv.translatesAutoresizingMaskIntoConstraints = false
         
         return tv
