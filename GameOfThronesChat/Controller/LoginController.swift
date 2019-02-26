@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class LoginController: UIViewController {
+class LoginController: UIViewController, UITextFieldDelegate {
     
     var messagesController: MessagesController?
     
@@ -57,10 +57,9 @@ class LoginController: UIViewController {
         }
     }
     
-
-    
-    let nameTextField: UITextField = {
+    lazy var nameTextField: UITextField = {
         let tf = UITextField()
+        tf.delegate = self
         tf.placeholder = "Name"
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
@@ -73,8 +72,9 @@ class LoginController: UIViewController {
         return view
     }()
     
-    let emailTextField: UITextField = {
+    lazy var emailTextField: UITextField = {
         let tf = UITextField()
+        tf.delegate = self
         tf.placeholder = "Email"
         tf.translatesAutoresizingMaskIntoConstraints = false
         return tf
@@ -87,8 +87,9 @@ class LoginController: UIViewController {
         return view
     }()
     
-    let passwordTextField: UITextField = {
+    lazy var passwordTextField: UITextField = {
         let tf = UITextField()
+        tf.delegate = self
         tf.placeholder = "Password"
         tf.isSecureTextEntry = true
         tf.translatesAutoresizingMaskIntoConstraints = false
@@ -105,8 +106,6 @@ class LoginController: UIViewController {
         imageView.isUserInteractionEnabled = true
         return imageView
     }()
-    
-   
     
     lazy var segmentedControl: UISegmentedControl = {
         let sc = UISegmentedControl(items: ["Login", "Register"])
@@ -220,8 +219,15 @@ class LoginController: UIViewController {
         profileImageView.widthAnchor.constraint(lessThanOrEqualToConstant: 150).isActive = true
         profileImageView.heightAnchor.constraint(equalToConstant: 150).isActive = true
     }
-
-
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 
 }
 
