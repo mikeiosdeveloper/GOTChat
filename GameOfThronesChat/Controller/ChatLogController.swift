@@ -31,23 +31,12 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
             let messageRef = Database.database().reference().child("messages").child(messageId)
             messageRef.observeSingleEvent(of: .value, with: { (messageSnapshot) in
                 guard let dict = messageSnapshot.value as? [String: Any] else { return }
-                if let fromId = dict["fromId"] as? String, let toId = dict["toId"] as? String, let text = dict["text"] as? String, let timeInterval = dict["timestamp"] as? String {
-                    let message = Message(fromId: fromId, toIDd: toId, text: text, timeInterval: timeInterval, imageUrl: nil)
-                    
-                        self.messages.append(message)
-                    
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                    }
-                } else if let fromId = dict["fromId"] as? String, let toId = dict["toId"] as? String, let imageUrl = dict["imageUrl"] as? String, let timeInterval = dict["timestamp"] as? String {
-                    let message = Message(fromId: fromId, toIDd: toId, text: nil, timeInterval: timeInterval, imageUrl: imageUrl)
-                    
+                    let message = Message(dictionary: dict)
                     self.messages.append(message)
                     
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
                     }
-                }
             })
         }, withCancel: nil)
     }
