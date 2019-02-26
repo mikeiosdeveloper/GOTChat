@@ -258,7 +258,6 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
                     let imageUrl = url.absoluteString
                     
                     uploadCompletion(imageUrl)
-
                 })
             }
         }
@@ -360,6 +359,7 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
         cell.chatLogController = self
         
         let message = messages[indexPath.item]
+        cell.message = message
         
         if let text = message.text {
             cell.textView.text = text
@@ -369,6 +369,8 @@ class ChatLogController: UICollectionViewController, UICollectionViewDelegateFlo
             cell.bubbleWidthAnchor?.constant = 200
             cell.textView.isHidden = true
         }
+        
+        cell.playButton.isHidden = message.videoUrl == nil
         
         setupCell(cell: cell, message: message)
         
