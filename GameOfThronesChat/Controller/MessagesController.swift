@@ -50,23 +50,13 @@ class MessagesController: UITableViewController {
         
         messageReference.observeSingleEvent(of: .value, with: { (dataSnapshot) in
             if let dict = dataSnapshot.value as? [String: Any] {
-                if let fromId = dict["fromId"] as? String, let toId = dict["toId"] as? String, let text = dict["text"] as? String, let timeInterval = dict["timestamp"] as? String {
-                    let message = Message(fromId: fromId, toIDd: toId, text: text, timeInterval: timeInterval, imageUrl: nil)
+                let message = Message(dictionary: dict)
                     
                     if let chatPartnerId = message.chatPartnerId() {
                         self.messagesDistionary[chatPartnerId] = message
                     }
                     
                     self.attemptReloadTable()
-                } else if let fromId = dict["fromId"] as? String, let toId = dict["toId"] as? String, let timeInterval = dict["timestamp"] as? String, let imageUrl = dict["imageUrl"] as? String {
-                    let message = Message(fromId: fromId, toIDd: toId, text: nil, timeInterval: timeInterval, imageUrl: imageUrl)
-                    
-                    if let chatPartnerId = message.chatPartnerId() {
-                        self.messagesDistionary[chatPartnerId] = message
-                    }
-                    
-                    self.attemptReloadTable()
-                }
             }
         })
     }

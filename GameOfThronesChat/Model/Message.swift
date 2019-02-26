@@ -14,15 +14,18 @@ class Message {
     var toId: String?
     var text: String?
     var timestamp: String?
-    
     var imageUrl: String?
+    var imageWidth: CGFloat?
+    var imageHeight: CGFloat?
     
-    init(fromId: String, toIDd: String, text: String?, timeInterval: String, imageUrl: String?) {
-        self.fromId = fromId
-        self.toId = toIDd
-        self.text = text
-        self.timestamp = timeInterval
-        self.imageUrl = imageUrl
+    init(dictionary: [String: Any]) {
+        self.fromId = dictionary["fromId"] as? String
+        self.toId = dictionary["toId"] as? String
+        self.text = dictionary["text"] as? String
+        self.timestamp = dictionary["timestamp"] as? String
+        self.imageUrl = dictionary["imageUrl"] as? String
+        self.imageWidth = dictionary["imageWidth"] as? CGFloat
+        self.imageHeight = dictionary["imageHeight"] as? CGFloat
     }
     
     func chatPartnerId() -> String? {
