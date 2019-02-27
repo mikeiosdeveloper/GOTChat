@@ -12,6 +12,8 @@ import Firebase
 class MessagesController: UITableViewController {
     
     let cellId = "cellId"
+    var messages: [Message] = []
+    var messagesDistionary: [String: Message] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,10 +25,9 @@ class MessagesController: UITableViewController {
         checkIfUserIsLoggedIn()
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
-    
-    var messages: [Message] = []
-    var messagesDistionary: [String: Message] = [:]
     
     func observeUserMessages() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -42,6 +43,11 @@ class MessagesController: UITableViewController {
                 self.fetchMessagesWithMessageId(messageId: messageId)
 
             }, withCancel: nil)
+        }, withCancel: nil)
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+            self.messagesDistionary.removeValue(forKey: snapshot.key)
+            self.attemptReloadTable()
         }, withCancel: nil)
     }
     
@@ -160,6 +166,8 @@ class MessagesController: UITableViewController {
         navigationController?.pushViewController(chatLogController, animated: true)
     }
     
+    // MARK: TableView
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
     }
@@ -193,6 +201,35 @@ class MessagesController: UITableViewController {
             
             self.showChatControllerForUser(user: user)
         }, withCancel: nil)
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let message = messages[indexPath.row]
+        
+        if let chatPartnerId = message.chatPartnerId() {
+            Database.database().reference().child("user-messages").child(chatPartnerId).removeValue { (error, ref) in
+                
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                self.messagesDistionary.removeValue(forKey: chatPartnerId)
+                self.attemptReloadTable()
+            }
+        }
+        
+        
+        
+        
+        
     }
     
 }
