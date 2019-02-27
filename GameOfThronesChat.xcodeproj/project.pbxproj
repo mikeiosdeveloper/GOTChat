@@ -21,6 +21,7 @@
 		873A421C221F668600C7001B /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873A421B221F668600C7001B /* ChatLogController.swift */; };
 		873A421E22204AC500C7001B /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873A421D22204AC500C7001B /* Message.swift */; };
 		87AF9CE22221F82D001FCD1F /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AF9CE12221F82D001FCD1F /* ChatMessageCell.swift */; };
+		87D1056D22263C2D00FBB496 /* ChatInputContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D1056C22263C2D00FBB496 /* ChatInputContainerView.swift */; };
 		87DC0CA8221D7AC4001ADA31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 87DC0CA7221D7AC4001ADA31 /* GoogleService-Info.plist */; };
 		F81BA0E41896207B4D030C45 /* Pods_GameOfThronesChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBBD5B1528900BDEE3F3570 /* Pods_GameOfThronesChat.framework */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 		873A421B221F668600C7001B /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		873A421D22204AC500C7001B /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		87AF9CE12221F82D001FCD1F /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
+		87D1056C22263C2D00FBB496 /* ChatInputContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputContainerView.swift; sourceTree = "<group>"; };
 		87DC0CA7221D7AC4001ADA31 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E2267FA87F78E862081D5905 /* Pods-GameOfThronesChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GameOfThronesChat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GameOfThronesChat/Pods-GameOfThronesChat.debug.xcconfig"; sourceTree = "<group>"; };
 		EDB98AF892C663F2EDDEAD50 /* Pods-GameOfThronesChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GameOfThronesChat.release.xcconfig"; path = "Pods/Target Support Files/Pods-GameOfThronesChat/Pods-GameOfThronesChat.release.xcconfig"; sourceTree = "<group>"; };
@@ -90,10 +92,10 @@
 		872C329C221C848F00922D67 /* GameOfThronesChat */ = {
 			isa = PBXGroup;
 			children = (
-				873A4218221F002200C7001B /* Helper */,
 				873A4211221DE4FE00C7001B /* Model */,
 				873A4213221DFB6E00C7001B /* View */,
 				872C32AF221C87AD00922D67 /* Controller */,
+				873A4218221F002200C7001B /* Helper */,
 				872C329D221C848F00922D67 /* AppDelegate.swift */,
 				872C32A1221C848F00922D67 /* Main.storyboard */,
 				872C32A4221C849100922D67 /* Assets.xcassets */,
@@ -130,6 +132,7 @@
 			children = (
 				873A4214221DFB9B00C7001B /* UserCell.swift */,
 				87AF9CE12221F82D001FCD1F /* ChatMessageCell.swift */,
+				87D1056C22263C2D00FBB496 /* ChatInputContainerView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -278,6 +281,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				873A421C221F668600C7001B /* ChatLogController.swift in Sources */,
+				87D1056D22263C2D00FBB496 /* ChatInputContainerView.swift in Sources */,
 				873A420E221DC14400C7001B /* NewMessagesController.swift in Sources */,
 				872C32A0221C848F00922D67 /* MessagesController.swift in Sources */,
 				873A4215221DFB9B00C7001B /* UserCell.swift in Sources */,
